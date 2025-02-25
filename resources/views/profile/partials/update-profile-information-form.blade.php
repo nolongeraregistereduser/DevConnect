@@ -52,20 +52,31 @@
             <x-input-label for="profile_picture" :value="__('Profile Picture')" />
             <div class="mt-2 flex items-center space-x-4">
                 @if($user->profile_picture)
-                    <img src="{{ Storage::url($user->profile_picture) }}" class="w-20 h-20 rounded-full object-cover ring-2 ring-indigo-500 ring-offset-2">
+                    <img src="{{ asset('storage/app/public/' . $user->profile_picture) }}" 
+                        alt="{{ $user->name }}'s profile picture"
+                        class="w-20 h-20 rounded-full object-cover ring-2 ring-indigo-500 ring-offset-2">
                 @else
                     <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
                         <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
                 @endif
-                <input type="file" id="profile_picture" name="profile_picture" 
-                    class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0 file:text-sm file:font-semibold
-                    file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100
-                    cursor-pointer focus:outline-none" accept="image/*"/>
+                <div class="flex flex-col space-y-2 flex-1">
+                    <input type="file" id="profile_picture" name="profile_picture" 
+                        class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0 file:text-sm file:font-semibold
+                        file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100
+                        cursor-pointer focus:outline-none" 
+                        accept="image/*"
+                        onchange="previewImage(this)"/>
+                    @if($user->profile_picture)
+                        <p class="text-xs text-gray-500">Current profile picture will be replaced upon save</p>
+                    @endif
+                </div>
             </div>
+            <x-input-error class="mt-2" :messages="$errors->get('profile_picture')" />
         </div>
 
         <!-- Bio -->
@@ -141,6 +152,44 @@
             <x-input-error class="mt-2" :messages="$errors->get('gitlab_link')" />
         </div> -->
 
+        <!-- Projects -->
+        <div class="mt-4">
+            <div class="flex justify-between items-center">
+                <x-input-label :value="__('Projects')" />
+                <button type="button" 
+                    onclick="openModal('project-modal')"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Add Project
+                </button>
+            </div>
+            <div id="projects-container" class="mt-3 space-y-3">
+                <!-- Projects will be displayed here -->
+            </div>
+            <input type="hidden" name="projects" id="projects-hidden" :value="old('projects', json_encode($user->projects))" />
+        </div>
+
+        <!-- Certifications -->
+        <div class="mt-4">
+            <div class="flex justify-between items-center">
+                <x-input-label :value="__('Certifications')" />
+                <button type="button" 
+                    onclick="openModal('certification-modal')"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Add Certification
+                </button>
+            </div>
+            <div id="certifications-container" class="mt-3 space-y-3">
+                <!-- Certifications will be displayed here -->
+            </div>
+            <input type="hidden" name="certifications" id="certifications-hidden" :value="old('certifications', json_encode($user->certifications))" />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
@@ -156,6 +205,8 @@
         </div>
     </form>
 </section>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -241,3 +292,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeTagInput('languages-input', 'languages-tags', 'languages-hidden');
 });
 </script>
+
+
+
