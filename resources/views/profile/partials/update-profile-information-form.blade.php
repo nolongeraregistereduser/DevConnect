@@ -264,6 +264,161 @@
     </div>
 </div>
 
+<!-- Add this before your existing script -->
+<script>
+// Global variables and functions
+let projects = [];
+let certifications = [];
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+}
+
+function saveProject() {
+    const project = {
+        title: document.getElementById('project-title').value,
+        description: document.getElementById('project-description').value,
+        link: document.getElementById('project-link').value,
+        date: document.getElementById('project-date').value
+    };
+
+    projects.push(project);
+    document.getElementById('projects-hidden').value = JSON.stringify(projects);
+    updateProjectsDisplay();
+    closeModal('project-modal');
+    clearProjectForm();
+}
+
+function saveCertification() {
+    const certification = {
+        title: document.getElementById('certification-title').value,
+        organization: document.getElementById('certification-organization').value,
+        date: document.getElementById('certification-date').value,
+        link: document.getElementById('certification-link').value
+    };
+
+    certifications.push(certification);
+    document.getElementById('certifications-hidden').value = JSON.stringify(certifications);
+    updateCertificationsDisplay();
+    closeModal('certification-modal');
+    clearCertificationForm();
+}
+
+function updateProjectsDisplay() {
+    const container = document.getElementById('projects-container');
+    if (!container) return;
+    
+    container.innerHTML = projects.map((project, index) => `
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-lg font-medium text-gray-900">${project.title}</h4>
+                    <p class="text-sm text-gray-500">${project.date}</p>
+                </div>
+                <button onclick="removeProject(${index})" class="text-gray-400 hover:text-red-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="mt-2 text-gray-600">${project.description}</p>
+            ${project.link ? `<a href="${project.link}" target="_blank" class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
+                View Project
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+            </a>` : ''}
+        </div>
+    `).join('');
+}
+
+function updateCertificationsDisplay() {
+    const container = document.getElementById('certifications-container');
+    if (!container) return;
+
+    container.innerHTML = certifications.map((cert, index) => `
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-lg font-medium text-gray-900">${cert.title}</h4>
+                    <p class="text-sm text-gray-500">${cert.organization} - ${cert.date}</p>
+                </div>
+                <button onclick="removeCertification(${index})" class="text-gray-400 hover:text-red-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            ${cert.link ? `<a href="${cert.link}" target="_blank" class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
+                View Certificate
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+            </a>` : ''}
+        </div>
+    `).join('');
+}
+
+function removeProject(index) {
+    projects.splice(index, 1);
+    document.getElementById('projects-hidden').value = JSON.stringify(projects);
+    updateProjectsDisplay();
+}
+
+function removeCertification(index) {
+    certifications.splice(index, 1);
+    document.getElementById('certifications-hidden').value = JSON.stringify(certifications);
+    updateCertificationsDisplay();
+}
+
+function clearProjectForm() {
+    document.getElementById('project-title').value = '';
+    document.getElementById('project-description').value = '';
+    document.getElementById('project-link').value = '';
+    document.getElementById('project-date').value = '';
+}
+
+function clearCertificationForm() {
+    document.getElementById('certification-title').value = '';
+    document.getElementById('certification-organization').value = '';
+    document.getElementById('certification-date').value = '';
+    document.getElementById('certification-link').value = '';
+}
+
+// Initialize data when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing data
+    try {
+        const projectsData = document.getElementById('projects-hidden').value;
+        const certificationsData = document.getElementById('certifications-hidden').value;
+        
+        projects = projectsData ? JSON.parse(projectsData) : [];
+        certifications = certificationsData ? JSON.parse(certificationsData) : [];
+        
+        updateProjectsDisplay();
+        updateCertificationsDisplay();
+    } catch (e) {
+        console.error('Error parsing existing data:', e);
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.id === 'project-modal' || event.target.id === 'certification-modal') {
+            closeModal(event.target.id);
+        }
+    }
+});
+</script>
+
+<!-- Your existing DOMContentLoaded script -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     function initializeTagInput(inputId, tagsContainerId, hiddenInputId) {
