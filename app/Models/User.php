@@ -21,6 +21,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'bio',
+        'profile_picture',
+        'location',
+        'website',
+        'skills',
+        'programming_languages',
+        'projects',
+        'certifications',
+        'github_link',
+        'gitlab_link'
     ];
 
     /**
@@ -43,6 +53,10 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'skills' => 'array',
+            'programming_languages' => 'array',
+            'projects' => 'array',
+            'certifications' => 'array'
         ];
     }
 }
