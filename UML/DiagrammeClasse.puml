@@ -1,0 +1,92 @@
+@startuml zbelboula
+
+skinparam classAttributeIconSize 0
+hide circle
+skinparam class {
+    BorderColor DarkGreen
+    ArrowColor DarkGreen
+}
+
+class User {
+    +id: UUID
+    +name: string
+    +email: string
+    +password: string
+    +created_at: timestamp
+    +updated_at: timestamp
+    +register(): void
+    +login(): void
+    +updateProfile(): void
+    +addConnection(user: User): void
+}
+
+class Post {
+    +id: UUID
+    +user_id: UUID
+    +content: text
+    +created_at: timestamp
+    +updated_at: timestamp
+    +createPost(): void
+    +editPost(): void
+    +deletePost(): void
+}
+
+class Comment {
+    +id: UUID
+    +post_id: UUID
+    +user_id: UUID
+    +content: text
+    +created_at: timestamp
+    +updated_at: timestamp
+    +addComment(): void
+    +editComment(): void
+    +deleteComment(): void
+}
+
+class Like {
+    +id: UUID
+    +user_id: UUID
+    +post_id: UUID
+    +created_at: timestamp
+    +addLike(): void
+    +removeLike(): void
+}
+
+class Notification {
+    +id: UUID
+    +user_id: UUID
+    +message: string
+    +is_read: boolean
+    +created_at: timestamp
+    +sendNotification(): void
+    +markAsRead(): void
+}
+
+class Connection {
+    +id: UUID
+    +user_id: UUID
+    +friend_id: UUID
+    +status: string
+    +created_at: timestamp
+    +sendRequest(): void
+    +acceptRequest(): void
+    +removeConnection(): void
+}
+
+class Hashtag {
+    +id: UUID
+    +name: string
+    +createHashtag(): void
+    +deleteHashtag(): void
+}
+
+User "1" -- "*" Post: creates
+User "1" -- "*" Comment: writes
+User "1" -- "*" Like: likes
+User "1" -- "*" Notification: receives
+User "1" -- "*" Connection: has
+Post "1" -- "*" Comment: has
+Post "1" -- "*" Like: has
+Post "*" -- "*" Hashtag: tagged_with
+
+@enduml
