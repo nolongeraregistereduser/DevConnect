@@ -14,9 +14,11 @@
                 <div class="h-48 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
                     <!-- Profile Picture -->
                     <div class="absolute -bottom-16 left-8">
+                        {{-- {{dd($user)}} --}}
                         @if($user->profile_picture)
-                            <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" 
+                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="{{ $user->name }}"
                                  class="w-32 h-32 rounded-full border-4 border-white object-cover shadow-lg">
+                                 <h1>test</h1>
                         @else
                             <div class="w-32 h-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center shadow-lg">
                                 <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -168,7 +170,7 @@
                                     </svg>
                                     <div>
                                         <p class="text-sm text-gray-600">Website</p>
-                                        <a href="{{ $user->website }}" target="_blank" class="text-blue-600 hover:underline">{{ $user->website }}</a>
+                                        {{-- <a href="{{route( $user->website )}}" target="_blank" class="text-blue-600 hover:underline">{{ $user->website }}</a> --}}
                                     </div>
                                 </div>
                             @endif
