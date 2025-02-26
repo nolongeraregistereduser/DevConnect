@@ -168,7 +168,7 @@
             <div id="projects-container" class="mt-3 space-y-3">
                 <!-- Projects will be displayed here -->
             </div>
-            <input type="hidden" name="projects" id="projects-hidden" :value="old('projects', json_encode($user->projects))" />
+            <input type="hidden" name="projects" id="projects-hidden" :value="old('projects', json_encode($user->projects ?? []))" />
         </div>
 
         <!-- Certifications -->
@@ -187,7 +187,7 @@
             <div id="certifications-container" class="mt-3 space-y-3">
                 <!-- Certifications will be displayed here -->
             </div>
-            <input type="hidden" name="certifications" id="certifications-hidden" :value="old('certifications', json_encode($user->certifications))" />
+            <input type="hidden" name="certifications" id="certifications-hidden" :value="old('certifications', json_encode($user->certifications ?? []))" />
         </div>
 
         <div class="flex items-center gap-4">
