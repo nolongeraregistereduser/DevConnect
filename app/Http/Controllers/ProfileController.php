@@ -37,6 +37,8 @@ class ProfileController extends Controller
             'github_link' => ['nullable', 'url', 'max:255'],
             'skills' => ['nullable', 'string'],
             'programming_languages' => ['nullable', 'string'],
+            'projects' => ['nullable', 'string'], // For JSON data
+            'certifications' => ['nullable', 'string'], // For JSON data
             'profile_picture' => ['nullable', 'image'],
         ]);
 
@@ -48,6 +50,8 @@ class ProfileController extends Controller
         // Parse JSON strings back to arrays
         $skills = json_decode($request->skills, true) ?? [];
         $programming_languages = json_decode($request->programming_languages, true) ?? [];
+        $projects = json_decode($request->projects, true) ?? [];
+        $certifications = json_decode($request->certifications, true) ?? [];
 
         $user->fill([
             'name' => $validated['name'],
@@ -56,9 +60,10 @@ class ProfileController extends Controller
             'location' => $validated['location'],
             'website' => $validated['website'],
             'github_link' => $validated['github_link'],
-            // 'gitlab_link' => $validated['gitlab_link'],
             'skills' => $skills,
             'programming_languages' => $programming_languages,
+            'projects' => $projects,
+            'certifications' => $certifications,
         ]);
 
         if ($user->isDirty('email')) {
