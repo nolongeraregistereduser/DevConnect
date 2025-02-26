@@ -27,7 +27,31 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'bio' => fake()->paragraph(),
+            'profile_picture' => null,
+            'location' => fake()->city(),
+            'website' => fake()->url(),
+            'skills' => json_encode(fake()->randomElements(['PHP', 'Laravel', 'Vue.js', 'React', 'Node.js', 'Python', 'Java', 'Docker'], rand(3, 6))),
+            'programming_languages' => json_encode(fake()->randomElements(['PHP', 'JavaScript', 'Python', 'Java', 'C++', 'Ruby'], rand(2, 4))),
+            'projects' => json_encode(array_map(function() {
+                return [
+                    'title' => fake()->sentence(),
+                    'description' => fake()->paragraph(),
+                    'link' => fake()->url(),
+                    'date' => fake()->date()
+                ];
+            }, range(1, rand(2, 5)))),
+            'certifications' => json_encode(array_map(function() {
+                return [
+                    'title' => fake()->sentence(),
+                    'organization' => fake()->company(),
+                    'date' => fake()->date(),
+                    'link' => fake()->url()
+                ];
+            }, range(1, rand(1, 3)))),
+            'github_link' => 'https://github.com/' . fake()->userName(),
+            'gitlab_link' => 'https://gitlab.com/' . fake()->userName(),
             'remember_token' => Str::random(10),
         ];
     }
