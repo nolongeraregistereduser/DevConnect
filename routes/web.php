@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ViewProfileController;
+use App\Http\Controllers\FeedController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,6 +20,11 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/profile/view', [ViewProfileController::class, 'showOwn'])->name('profile.view.own');
     Route::get('/profile/{id}/view', [ViewProfileController::class, 'show'])->name('profile.view');
+    
+    Route::get('/feed', [FeedController::class, 'index'])->name('feed');
+    Route::post('/posts', [FeedController::class, 'store'])->name('posts.store');
+    Route::post('/posts/{post}/like', [FeedController::class, 'like'])->name('posts.like');
+    Route::post('/posts/{post}/comment', [FeedController::class, 'comment'])->name('posts.comment');
 });
 
 require __DIR__.'/auth.php';

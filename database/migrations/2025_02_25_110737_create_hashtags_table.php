@@ -6,22 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
+        // Create hashtags table first
+        Schema::create('hashtags', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
+            $table->integer('posts_count')->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('hashtags');
     }
 };
