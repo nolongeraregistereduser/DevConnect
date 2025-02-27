@@ -53,6 +53,18 @@
         </div>
     </nav>
 
+    <!-- Add this after your navigation section -->
+    <div class="mb-6 flex justify-between items-center">
+        <h2 class="text-2xl font-semibold">Feed</h2>
+        <a href="{{ route('posts.create') }}" 
+           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Post
+        </a>
+    </div>
+
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto pt-20 px-4">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -94,11 +106,11 @@
                         <div class="mt-4 pt-4 border-t">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Connections</span>
-                                <span class="text-blue-600 font-medium">487</span>
+                                <span class="text-blue-600 font-medium">{{ $user->connections_count }}</span>
                             </div>
                             <div class="flex justify-between text-sm mt-2">
                                 <span class="text-gray-500">Posts</span>
-                                <span class="text-blue-600 font-medium">52</span>
+                                <span class="text-blue-600 font-medium">{{ $user->posts_count }}</span>
                             </div>
                         </div>
                     </div>
@@ -108,18 +120,12 @@
                 <div class="bg-white rounded-xl shadow-sm p-4">
                     <h3 class="font-semibold mb-4">Trending Tags</h3>
                     <div class="space-y-2">
+                        @foreach($trendingTags as $tag)
                         <a href="#" class="flex items-center justify-between hover:bg-gray-50 p-2 rounded">
-                            <span class="text-gray-600">#javascript</span>
-                            <span class="text-gray-400 text-sm">2.4k</span>
+                            <span class="text-gray-600">#{{ $tag->name }}</span>
+                            <span class="text-gray-400 text-sm">{{ $tag->posts_count }}</span>
                         </a>
-                        <a href="#" class="flex items-center justify-between hover:bg-gray-50 p-2 rounded">
-                            <span class="text-gray-600">#react</span>
-                            <span class="text-gray-400 text-sm">1.8k</span>
-                        </a>
-                        <a href="#" class="flex items-center justify-between hover:bg-gray-50 p-2 rounded">
-                            <span class="text-gray-600">#webdev</span>
-                            <span class="text-gray-400 text-sm">1.2k</span>
-                        </a>
+                        @endforeach
                     </div>
                 </div>
             </div>

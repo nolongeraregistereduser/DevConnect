@@ -22,6 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/{id}/view', [ViewProfileController::class, 'show'])->name('profile.view');
     
     Route::get('/feed', [FeedController::class, 'index'])->name('feed');
+    
+    // Posts routes
+    Route::get('/posts/create', [FeedController::class, 'create'])->name('posts.create');
     Route::post('/posts', [FeedController::class, 'store'])->name('posts.store');
     Route::post('/posts/{post}/like', [FeedController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/comment', [FeedController::class, 'comment'])->name('posts.comment');
