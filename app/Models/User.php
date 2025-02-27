@@ -56,4 +56,16 @@ class User extends Authenticatable
         'projects' => 'array',
         'certifications' => 'array'
     ];
+
+    function posts() {
+        return $this->hasMany(Post::class);
+    }
+
+    function comments() {
+        return $this->hasMany(Comment::class);
+    }
+
+    function likes() {
+        return $this->hasMany(Like::class);
+    }
 }
