@@ -3,34 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Connection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ViewProfileController extends Controller
 {
-    /**
-     * Display the user's public profile.
-     */
     public function show($id)
     {
         $user = User::findOrFail($id);
-        $isConnected = Auth::user()->connections()
-            ->where('connected_user_id', $user->id)
-            ->exists() || 
-            $user->connections()
-            ->where('connected_user_id', Auth::id())
-            ->exists();
+        
+        // Check connection status
+        $connectionStatus = null;
+        
+        if (Auth::check()) {
+            $connection = Connection::where(function($query) use ($user) {
+                $query->where('user_id', Auth::id())
+                    ->where('connected_user_id', $user->id);
+            })->orWhere(function($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->where('connected_user_id', Auth::id());
+            })->first();
 
-        return view('profile.view', compact('user', 'isConnected'));
+            if ($connection) {
+                $connectionStatus = [
+                    'id' => $connection->id,
+                    'status' => $connection->status,
+                    'is_receiver' => $connection->connected_user_id === Auth::id()
+                ];
+            }
+        }
+
+        return view('profile.view', compact('user', 'connectionStatus'));
     }
 
-    /**
-     * Display the authenticated user's own profile.
-     */
-    public function showOwn(Request $request)
+    public function showOwn()
     {
-        return view('profile.view', [
-            'user' => $request->user()
-        ]);
+        return $this->show(Auth::id());
     }
 }
