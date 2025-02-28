@@ -9,7 +9,15 @@ class Connection extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'connected_user_id', 'status'];
+    protected $fillable = [
+        'user_id',
+        'connected_user_id',
+        'status'
+    ];
+
+    protected $casts = [
+        'status' => 'string'
+    ];
 
     public function user()
     {
