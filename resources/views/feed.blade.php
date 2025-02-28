@@ -410,4 +410,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function toggleComments(commentsSectionId) {
+    const commentsSection = document.getElementById(commentsSectionId);
+    
+    // Hide all other open comments sections
+    document.querySelectorAll('[id^="comments-"]').forEach(section => {
+        if (section.id !== commentsSectionId && !section.classList.contains('hidden')) {
+            section.classList.add('hidden');
+        }
+    });
+    
+    // Toggle current comments section
+    commentsSection.classList.toggle('hidden');
+}
+
+// Close comments when clicking outside
+document.addEventListener('click', function(event) {
+    const commentsSections = document.querySelectorAll('[id^="comments-"]');
+    const isClickInsideComments = Array.from(commentsSections).some(section => 
+        section.contains(event.target) || 
+        event.target.closest('button')?.onclick?.toString().includes('toggleComments')
+    );
+    
+    if (!isClickInsideComments) {
+        commentsSections.forEach(section => section.classList.add('hidden'));
+    }
+});
 </script>
