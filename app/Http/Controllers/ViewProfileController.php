@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ViewProfileController extends Controller
 {
@@ -13,10 +14,11 @@ class ViewProfileController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        
-        return view('profile.view', [
-            'user' => $user
-        ]);
+        $isConnected = Auth::user()->connections()
+            ->where('connected_user_id', $user->id)
+            ->exists();
+
+        return view('profile.view', compact('user', 'isConnected'));
     }
 
     /**
