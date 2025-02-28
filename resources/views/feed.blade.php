@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevConnect - Social Network for Developers</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
@@ -229,48 +230,50 @@
 
     <!-- Comments Section -->
     <div id="comments-{{ $post->id }}" class="hidden mt-4">
-        <!-- Add Comment Form -->
-        <form class="mb-4">
-            <div class="flex items-start space-x-3">
-                <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                     alt="{{ auth()->user()->name }}" 
+    <!-- Add Comment Form -->
+    <form class="mb-4 comment-form" data-post-id="{{ $post->id }}">
+        @csrf
+        <div class="flex items-start space-x-3">
+            <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
+                 alt="{{ auth()->user()->name }}" 
+                 class="w-8 h-8 rounded-full"/>
+            <div class="flex-1">
+                <textarea 
+                    name="content"
+                    placeholder="Write a comment..." 
+                    class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    rows="2"
+                ></textarea>
+                <div class="mt-2 flex justify-end">
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+                        Post
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Comments List -->
+    <div class="space-y-4" id="commentsList-{{ $post->id }}">
+        @foreach($post->comments as $comment)
+            <div class="flex space-x-3">
+                <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
+                     alt="{{ $comment->user->name }}" 
                      class="w-8 h-8 rounded-full"/>
                 <div class="flex-1">
-                    <textarea 
-                        placeholder="Write a comment..." 
-                        class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                        rows="2"
-                    ></textarea>
-                    <div class="mt-2 flex justify-end">
-                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-                            Post
-                        </button>
+                    <div class="bg-gray-50 rounded-lg px-4 py-2">
+                        <div class="font-medium text-sm">{{ $comment->user->name }}</div>
+                        <p class="text-sm text-gray-700">{{ $comment->content }}</p>
+                    </div>
+                    <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
+                        <span>{{ $comment->created_at->diffForHumans() }}</span>
+                        <button class="hover:text-blue-500">Reply</button>
                     </div>
                 </div>
             </div>
-        </form>
-
-        <!-- Comments List -->
-        <div class="space-y-4">
-            @foreach($post->comments as $comment)
-                <div class="flex space-x-3">
-                    <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                         alt="{{ $comment->user->name }}" 
-                         class="w-8 h-8 rounded-full"/>
-                    <div class="flex-1">
-                        <div class="bg-gray-50 rounded-lg px-4 py-2">
-                            <div class="font-medium text-sm">{{ $comment->user->name }}</div>
-                            <p class="text-sm text-gray-700">{{ $comment->content }}</p>
-                        </div>
-                        <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
-                            <span>{{ $comment->created_at->diffForHumans() }}</span>
-                            <button class="hover:text-blue-500">Reply</button>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+        @endforeach
     </div>
+</div>
 </div>
                         </div>
                     </div>
@@ -395,6 +398,66 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     count.textContent = data.likes_count;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+
+    document.querySelectorAll('.comment-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const postId = this.dataset.postId;
+            const textarea = this.querySelector('textarea');
+            const content = textarea.value.trim();
+            
+            if (!content) return;
+
+            try {
+                const response = await fetch(`/posts/${postId}/comment`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: content
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Clear textarea
+                    textarea.value = '';
+                    
+                    // Add new comment to the list
+                    const commentsList = document.getElementById(`commentsList-${postId}`);
+                    const newComment = `
+                        <div class="flex space-x-3">
+                            <img src="${data.comment.user.profile_picture || 'https://avatar.iran.liara.run/public/boy'}" 
+                                 alt="${data.comment.user.name}" 
+                                 class="w-8 h-8 rounded-full"/>
+                            <div class="flex-1">
+                                <div class="bg-gray-50 rounded-lg px-4 py-2">
+                                    <div class="font-medium text-sm">${data.comment.user.name}</div>
+                                    <p class="text-sm text-gray-700">${data.comment.content}</p>
+                                </div>
+                                <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
+                                    <span>${data.comment.created_at}</span>
+                                    <button class="hover:text-blue-500">Reply</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    commentsList.insertAdjacentHTML('afterbegin', newComment);
+
+                    // Update comment count
+                    const commentCount = document.querySelector(`#postStats-${postId} span:last-child`);
+                    commentCount.textContent = parseInt(commentCount.textContent) + 1;
                 }
             } catch (error) {
                 console.error('Error:', error);
