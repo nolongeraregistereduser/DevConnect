@@ -94,4 +94,31 @@ class FeedController extends Controller
             'likes_count' => $post->likes_count
         ]);
     }
+
+    public function comment(Request $request, Post $post)
+    {
+        $validated = $request->validate([
+            'content' => 'required|string|max:500',
+        ]);
+
+        $comment = $post->comments()->create([
+            'user_id' => auth()->id(),
+            'content' => $validated['content']
+        ]);
+
+        $post->increment('comments_count');
+
+        return response()->json([
+            'success' => true,
+            'comment' => [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'created_at' => $comment->created_at->diffForHumans(),
+                'user' => [
+                    'name' => auth()->user()->name,
+                    'profile_picture' => auth()->user()->profile_picture
+                ]
+            ]
+        ]);
+    }
 }
