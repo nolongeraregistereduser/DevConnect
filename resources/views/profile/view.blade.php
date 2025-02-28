@@ -53,17 +53,44 @@
                             
                             @if(Auth::id() !== $user->id)
                                 <div class="mt-4">
-                                    <form action="{{ route('connections.store', $user->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" 
-                                                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-                                            </svg>
-                                            {{ $isConnected ? 'Connected' : 'Connect' }}
+                                    @if(!$connectionStatus)
+                                        <form action="{{ route('connections.store', $user->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md">
+                                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                                </svg>
+                                                Connect
+                                            </button>
+                                        </form>
+                                    @elseif($connectionStatus['status'] === 'pending')
+                                        @if($connectionStatus['is_receiver'])
+                                            <div class="flex space-x-2">
+                                                <form action="{{ route('connections.accept', $connectionStatus['id']) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md">
+                                                        Accept
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('connections.reject', $connectionStatus['id']) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md">
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <button disabled class="inline-flex items-center px-4 py-2 bg-gray-400 text-white text-sm font-medium rounded-md">
+                                                Request Pending
+                                            </button>
+                                        @endif
+                                    @elseif($connectionStatus['status'] === 'accepted')
+                                        <button disabled class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md">
+                                            Connected
                                         </button>
-                                    </form>
+                                    @endif
                                 </div>
                             @endif
                         </div>
