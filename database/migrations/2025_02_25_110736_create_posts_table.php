@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('content');
+            $table->string('image')->nullable();
             $table->text('code_snippet')->nullable();
             $table->integer('likes_count')->default(0);
             $table->integer('comments_count')->default(0);

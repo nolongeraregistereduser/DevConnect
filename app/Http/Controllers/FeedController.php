@@ -6,7 +6,8 @@ use App\Models\Post;
 use App\Models\Hashtag;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Like; 
+use Illuminate\Support\Facades\Auth; 
 
 class FeedController extends Controller
 {
