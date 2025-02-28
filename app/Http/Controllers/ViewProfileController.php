@@ -16,6 +16,9 @@ class ViewProfileController extends Controller
         $user = User::findOrFail($id);
         $isConnected = Auth::user()->connections()
             ->where('connected_user_id', $user->id)
+            ->exists() || 
+            $user->connections()
+            ->where('connected_user_id', Auth::id())
             ->exists();
 
         return view('profile.view', compact('user', 'isConnected'));

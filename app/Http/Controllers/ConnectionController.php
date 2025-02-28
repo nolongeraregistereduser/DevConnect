@@ -17,9 +17,32 @@ class ConnectionController extends Controller
 
         $connection = Connection::firstOrCreate([
             'user_id' => Auth::id(),
-            'connected_user_id' => $user->id
+            'connected_user_id' => $user->id,
+            'status' => 'pending'
         ]);
 
         return back()->with('success', 'Connection request sent!');
+    }
+
+    public function accept(Connection $connection)
+    {
+        if ($connection->connected_user_id !== Auth::id()) {
+            return back()->with('error', 'Unauthorized action');
+        }
+
+        $connection->update(['status' => 'accepted']);
+
+        return back()->with('success', 'Connection request accepted!');
+    }
+
+    public function reject(Connection $connection)
+    {
+        if ($connection->connected_user_id !== Auth::id()) {
+            return back()->with('error', 'Unauthorized action');
+        }
+
+        $connection->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Connection request rejected!');
     }
 }
