@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ViewProfileController;
 use App\Http\Controllers\FeedController;
+use App\Http\Controllers\ConnectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -29,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/create', [FeedController::class, 'create'])->name('posts.create');
     Route::post('/posts', [FeedController::class, 'store'])->name('posts.store');
     Route::post('/posts/{post}/comment', [FeedController::class, 'comment'])->name('posts.comment');
+    
+    Route::post('/connections/{user}', [ConnectionController::class, 'store'])->name('connections.store');
 });
 
 require __DIR__.'/auth.php';
