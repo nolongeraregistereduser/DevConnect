@@ -12,7 +12,7 @@ class Connection extends Model
     protected $fillable = [
         'user_id',
         'connected_user_id',
-        'status'
+        'status',
     ];
 
     protected $casts = [
