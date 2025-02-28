@@ -195,19 +195,35 @@
 
                             <div class="mt-4 flex items-center justify-between border-t pt-4">
                                 <div class="flex items-center space-x-4">
-                                    <button class="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                                        </svg>
-                                        <span>{{ $post->likes_count }}</span>
-                                    </button>
-                                    <button class="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                                        </svg>
-                                        <span>{{ $post->comments_count }}</span>
-                                    </button>
+                                    <form action="{{ route($post->isLikedBy(auth()->user()) ? 'posts.unlike' : 'posts.like', $post) }}" 
+                                          method="POST" 
+                                          class="like-form">
+                                        @csrf
+                                        @if($post->isLikedBy(auth()->user()))
+                                            @method('DELETE')
+                                        @endif
+                                        <button type="submit" class="flex items-center space-x-2 text-gray-500 hover:text-blue-500 group">
+                                            <svg class="w-5 h-5 {{ $post->isLikedBy(auth()->user()) ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-500' }}" 
+                                                 fill="{{ $post->isLikedBy(auth()->user()) ? 'currentColor' : 'none' }}" 
+                                                 stroke="currentColor" 
+                                                 viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" 
+                                                      stroke-linejoin="round" 
+                                                      stroke-width="2" 
+                                                      d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                            </svg>
+                                            <span class="likes-count {{ $post->isLikedBy(auth()->user()) ? 'text-blue-500' : '' }}">
+                                                {{ $post->likes_count }}
+                                            </span>
+                                        </button>
+                                    </form>
                                 </div>
+                                <button class="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+                                    </svg>
+                                    <span>{{ $post->comments_count }}</span>
+                                </button>
                                 <button class="text-gray-500 hover:text-blue-500">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
@@ -288,3 +304,60 @@
                 </div>
             </body>
             </html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.like-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const url = this.action;
+            const method = this.querySelector('input[name="_method"]')?.value || 'POST';
+            const token = this.querySelector('input[name="_token"]').value;
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const button = this.querySelector('button');
+                    const svg = button.querySelector('svg');
+                    const count = button.querySelector('.likes-count');
+                    
+                    if (method === 'DELETE') {
+                        // Change to like state
+                        this.action = this.action.replace('unlike', 'like');
+                        svg.classList.remove('text-blue-500');
+                        svg.setAttribute('fill', 'none');
+                        count.classList.remove('text-blue-500');
+                        this.querySelector('input[name="_method"]')?.remove();
+                    } else {
+                        // Change to unlike state
+                        this.action = this.action.replace('like', 'unlike');
+                        const methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'DELETE';
+                        this.appendChild(methodInput);
+                        svg.classList.add('text-blue-500');
+                        svg.setAttribute('fill', 'currentColor');
+                        count.classList.add('text-blue-500');
+                    }
+                    
+                    count.textContent = data.likes_count;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+});
+</script>

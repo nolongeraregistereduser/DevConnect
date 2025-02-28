@@ -6,15 +6,15 @@ use App\Models\Post;
 use App\Models\Hashtag;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Like; 
-use Illuminate\Support\Facades\Auth; 
+use App\Models\Like;
+use Illuminate\Support\Facades\Auth;
 
 class FeedController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-        
+
         $posts = Post::with(['user', 'likes', 'comments'])
             ->latest()
             ->paginate(10);
@@ -39,7 +39,8 @@ class FeedController extends Controller
             'code_snippet' => 'nullable|string',
         ]);
 
-        $post = Auth::user()->posts()->create([
+        $user = Auth::user();
+        $post = $user->posts()->create([
             'content' => $validated['content'],
             'code_snippet' => $validated['code_snippet'],
         ]);
@@ -56,5 +57,41 @@ class FeedController extends Controller
         }
 
         return redirect()->route('feed')->with('success', 'Post created successfully!');
+    }
+
+    public function like(Post $post)
+    {
+        $user = Auth::user();
+
+        if (!$post->isLikedBy($user)) {
+            $post->likes()->create([
+                'user_id' => $user->id
+            ]);
+            
+            // Increment the likes count
+            $post->increment('likes_count');
+        }
+
+        return response()->json([
+            'success' => true,
+            'likes_count' => $post->likes_count
+        ]);
+    }
+
+    public function unlike(Post $post)
+    {
+        $user = Auth::user();
+
+        if ($post->isLikedBy($user)) {
+            $post->likes()->where('user_id', $user->id)->delete();
+            
+            // Decrement the likes count
+            $post->decrement('likes_count');
+        }
+
+        return response()->json([
+            'success' => true,
+            'likes_count' => $post->likes_count
+        ]);
     }
 }
