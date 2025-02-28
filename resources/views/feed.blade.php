@@ -193,94 +193,85 @@
                             </div>
                             @endif
 
-                            <div class="mt-4 flex items-center justify-between border-t pt-4">
-                                <div class="flex items-center space-x-4">
-                                    <form action="{{ route($post->isLikedBy(auth()->user()) ? 'posts.unlike' : 'posts.like', $post) }}" 
-                                          method="POST" 
-                                          class="like-form">
-                                        @csrf
-                                        @if($post->isLikedBy(auth()->user()))
-                                            @method('DELETE')
-                                        @endif
-                                        <button type="submit" class="flex items-center space-x-2 text-gray-500 hover:text-blue-500 group">
-                                            <svg class="w-5 h-5 {{ $post->isLikedBy(auth()->user()) ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-500' }}" 
-                                                 fill="{{ $post->isLikedBy(auth()->user()) ? 'currentColor' : 'none' }}" 
-                                                 stroke="currentColor" 
-                                                 viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" 
-                                                      stroke-linejoin="round" 
-                                                      stroke-width="2" 
-                                                      d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                                            </svg>
-                                            <span class="likes-count {{ $post->isLikedBy(auth()->user()) ? 'text-blue-500' : '' }}">
-                                                {{ $post->likes_count }}
-                                            </span>
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="relative">
-                                    <button 
-                                        onclick="toggleComments('comments-{{ $post->id }}')" 
-                                        class="flex items-center space-x-2 text-gray-500 hover:text-blue-500"
-                                    >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                                        </svg>
-                                        <span>{{ $post->comments_count }}</span>
-                                    </button>
-                                </div>
+                            <div class="mt-4 border-t pt-4">
+    <!-- Post Stats Section -->
+    <div class="flex items-center space-x-4" id="postStats-{{ $post->id }}">
+        <!-- Like Button -->
+        <form action="{{ route($post->isLikedBy(auth()->user()) ? 'posts.unlike' : 'posts.like', $post) }}" 
+              method="POST" 
+              class="like-form">
+            @csrf
+            @if($post->isLikedBy(auth()->user()))
+                @method('DELETE')
+            @endif
+            <button type="submit" class="flex items-center space-x-2 text-gray-500 hover:text-blue-500 group">
+                <svg class="w-5 h-5 {{ $post->isLikedBy(auth()->user()) ? 'text-blue-500' : 'text-gray-500 group-hover:text-blue-500' }}" 
+                     fill="{{ $post->isLikedBy(auth()->user()) ? 'currentColor' : 'none' }}" 
+                     stroke="currentColor" 
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                </svg>
+                <span class="likes-count {{ $post->isLikedBy(auth()->user()) ? 'text-blue-500' : '' }}">
+                    {{ $post->likes_count }}
+                </span>
+            </button>
+        </form>
 
-                                <!-- Comments Section (Hidden by default) -->
-                                <div id="comments-{{ $post->id }}" class="hidden mt-4 border-t pt-4">
-                                    <!-- Add Comment Form -->
-                                    <form class="mb-4">
-                                        <div class="flex items-start space-x-3">
-                                            <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                                                 alt="{{ auth()->user()->name }}" 
-                                                 class="w-8 h-8 rounded-full"/>
-                                            <div class="flex-1 relative">
-                                                <textarea 
-                                                    rows="1"
-                                                    placeholder="Write a comment..." 
-                                                    class="w-full px-3 py-2 text-sm border rounded-full focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                                ></textarea>
-                                                <button type="submit" class="absolute right-2 top-2 text-blue-500 hover:text-blue-600">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
+        <!-- Comment Button -->
+        <button onclick="toggleComments('comments-{{ $post->id }}')" 
+                class="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
+            </svg>
+            <span>{{ $post->comments_count }}</span>
+        </button>
+    </div>
 
-                                    <!-- Comments List -->
-                                    <div class="space-y-4">
-                                        @foreach($post->comments as $comment)
-                                        <div class="flex items-start space-x-3">
-                                            <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                                                 alt="{{ $comment->user->name }}" 
-                                                 class="w-8 h-8 rounded-full"/>
-                                            <div class="flex-1">
-                                                <div class="bg-gray-100 rounded-2xl px-4 py-2">
-                                                    <div class="font-medium text-sm">{{ $comment->user->name }}</div>
-                                                    <p class="text-sm text-gray-700">{{ $comment->content }}</p>
-                                                </div>
-                                                <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500 pl-4">
-                                                    <span>{{ $comment->created_at->diffForHumans() }}</span>
-                                                    <button class="font-semibold hover:text-blue-500">Like</button>
-                                                    <button class="font-semibold hover:text-blue-500">Reply</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <button class="text-gray-500 hover:text-blue-500">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-                                    </svg>
-                                </button>
-                            </div>
+    <!-- Comments Section -->
+    <div id="comments-{{ $post->id }}" class="hidden mt-4">
+        <!-- Add Comment Form -->
+        <form class="mb-4">
+            <div class="flex items-start space-x-3">
+                <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
+                     alt="{{ auth()->user()->name }}" 
+                     class="w-8 h-8 rounded-full"/>
+                <div class="flex-1">
+                    <textarea 
+                        placeholder="Write a comment..." 
+                        class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                        rows="2"
+                    ></textarea>
+                    <div class="mt-2 flex justify-end">
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600">
+                            Post
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Comments List -->
+        <div class="space-y-4">
+            @foreach($post->comments as $comment)
+                <div class="flex space-x-3">
+                    <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
+                         alt="{{ $comment->user->name }}" 
+                         class="w-8 h-8 rounded-full"/>
+                    <div class="flex-1">
+                        <div class="bg-gray-50 rounded-lg px-4 py-2">
+                            <div class="font-medium text-sm">{{ $comment->user->name }}</div>
+                            <p class="text-sm text-gray-700">{{ $comment->content }}</p>
+                        </div>
+                        <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
+                            <span>{{ $comment->created_at->diffForHumans() }}</span>
+                            <button class="hover:text-blue-500">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
                 </div>
@@ -414,11 +405,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function toggleComments(commentsSectionId) {
     const commentsSection = document.getElementById(commentsSectionId);
-    commentsSection.classList.toggle('hidden');
+    const postId = commentsSectionId.split('-')[1];
+    const postStats = document.getElementById('postStats-' + postId);
+    
+    if (commentsSection.classList.contains('hidden')) {
+        // Show comments
+        commentsSection.classList.remove('hidden');
+        postStats.classList.add('hidden'); // Hide the stats
+    } else {
+        // Hide comments
+        commentsSection.classList.add('hidden');
+        postStats.classList.remove('hidden'); // Show the stats
+    }
 }
-
-// Remove the click outside listener since we want comments to stay visible
-document.removeEventListener('click', function(event) {
-    // ... remove existing click outside handler
-});
 </script>
