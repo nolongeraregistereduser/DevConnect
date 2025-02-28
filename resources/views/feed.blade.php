@@ -169,12 +169,16 @@
                     <div class="p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <img src="{{ $post->user->profile_picture ? asset('storage/' . $post->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                                     alt="{{ $post->user->name }}" 
-                                     class="w-12 h-12 rounded-full"/>
+                                <a href="{{ route('profile.view', $post->user->id) }}" class="hover:opacity-80">
+                                    <img src="{{ $post->user->profile_picture ? asset('storage/' . $post->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
+                                         alt="{{ $post->user->name }}" 
+                                         class="w-12 h-12 rounded-full"/>
+                                </a>
                                 <div>
-                                    <h3 class="font-semibold">{{ $post->user->name }}</h3>
-                                    <p class="text-gray-500 text-sm">{{ $post->user->bio }}</p>
+                                    <a href="{{ route('profile.view', $post->user->id) }}" class="hover:text-blue-500">
+                                        <h3 class="font-semibold">{{ $post->user->name }}</h3>
+                                    </a>
+                                    <p class="text-gray-500 text-sm">{{ "📍". $post->user->location  }}</p>
                                     <p class="text-gray-400 text-xs">{{ $post->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
@@ -257,12 +261,16 @@
     <div class="space-y-4" id="commentsList-{{ $post->id }}">
         @foreach($post->comments as $comment)
             <div class="flex space-x-3">
-                <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                     alt="{{ $comment->user->name }}" 
-                     class="w-8 h-8 rounded-full"/>
+                <a href="{{ route('profile.view', $comment->user->id) }}" class="hover:opacity-80">
+                    <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
+                         alt="{{ $comment->user->name }}" 
+                         class="w-8 h-8 rounded-full"/>
+                </a>
                 <div class="flex-1">
                     <div class="bg-gray-50 rounded-lg px-4 py-2">
-                        <div class="font-medium text-sm">{{ $comment->user->name }}</div>
+                        <a href="{{ route('profile.view', $comment->user->id) }}" class="hover:text-blue-500">
+                            <div class="font-medium text-sm">{{ $comment->user->name }}</div>
+                        </a>
                         <p class="text-sm text-gray-700">{{ $comment->content }}</p>
                     </div>
                     <div class="mt-1 flex items-center space-x-4 text-xs text-gray-500">
