@@ -68,26 +68,4 @@ class User extends Authenticatable
     function likes() {
         return $this->hasMany(Like::class);
     }
-
-    public function connections()
-    {
-        return $this->hasMany(Connection::class);
-    }
-
-    public function connectedUsers()
-    {
-        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connected_user_id')
-                    ->withPivot('status')
-                    ->withTimestamps();
-    }
-
-    public function pendingConnections()
-    {
-        return $this->connections()->where('status', 'pending');
-    }
-
-    public function acceptedConnections()
-    {
-        return $this->connections()->where('status', 'accepted');
-    }
 }

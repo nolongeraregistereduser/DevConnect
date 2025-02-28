@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Connection;
+use App\Notifications\ConnectionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +21,8 @@ class ConnectionController extends Controller
             'connected_user_id' => $user->id,
             'status' => 'pending'
         ]);
+
+        $connection->user->notify(new ConnectionRequest ($connection));
 
         return back()->with('success', 'Connection request sent!');
     }
