@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/posts/{post}/comment', [FeedController::class, 'comment'])->name('posts.comment');
     
     Route::post('/connections/{user}', [ConnectionController::class, 'store'])->name('connections.store');
+    Route::put('/connections/{connection}/accept', [ConnectionController::class, 'accept'])->name('connections.accept');
+    Route::put('/connections/{connection}/reject', [ConnectionController::class, 'reject'])->name('connections.reject');
 });
 
 require __DIR__.'/auth.php';
