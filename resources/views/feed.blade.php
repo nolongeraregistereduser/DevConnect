@@ -28,26 +28,52 @@
                 </div>
                 
                 <div class="flex items-center space-x-6">
-                    <a href="#" class="flex items-center space-x-1 hover:text-blue-400">
+                    <a href="{{ route('feed') }}" class="flex items-center space-x-1 hover:text-blue-400">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
                     </a>
-                    <a href="#" class="flex items-center space-x-1 hover:text-blue-400">
+                    <a href="{{route('feed')}}" class="flex items-center space-x-1 hover:text-blue-400">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                         </svg>
                         <span class="bg-blue-500 rounded-full w-2 h-2"></span>
                     </a>
-                    <a href="#" class="flex items-center space-x-1 hover:text-blue-400">
+                    <a href="{{route('feed')}}" class="flex items-center space-x-1 hover:text-blue-400">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
-                        <span class="bg-red-500 rounded-full w-2 h-2"></span>
                     </a>
-                    <div class="h-8 w-8 rounded-full overflow-hidden">
-                        <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+
+                    
+
+                    <div class="relative">
+                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer" onclick="toggleDropdown()">
+                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                        </div>
+                        <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                            <a href="{{ route('profile.view', $user->id) }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>
+                            </form>
+                        </div>
                     </div>
+                    <script>
+                        function toggleDropdown() {
+                            const dropdownMenu = document.getElementById('dropdownMenu');
+                            dropdownMenu.classList.toggle('hidden');
+                        }
+
+                        document.addEventListener('click', function(event) {
+                            const dropdownMenu = document.getElementById('dropdownMenu');
+                            const profileImage = dropdownMenu.previousElementSibling;
+
+                            if (!profileImage.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                                dropdownMenu.classList.add('hidden');
+                            }
+                        });
+                    </script>
                 </div>
             </div>
             
