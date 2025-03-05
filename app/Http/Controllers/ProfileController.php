@@ -72,7 +72,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return redirect()->route('dashboard')->with('status', 'Profile updated successfully!');
+        return redirect()->route('feed');
     }
 
     /**
