@@ -5,6 +5,17 @@ use App\Http\Controllers\ViewProfileController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ConnectionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TweetController;
+
+
+
+
+Route::get('/tweet', [TweetController::class, 'create'])->name('tweets.create');
+    Route::post('/tweets', [TweetController::class, 'store'])->name('tweets.store');
+    Route::view('pusher1', 'pusher1');
+    Route::view('pusher2', 'pusher2');
+
+
 
 Route::get('/', function () {
     return view('welcome');
