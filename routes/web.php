@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ViewProfileController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TweetController;
 
@@ -45,6 +46,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/connections/{user}', [ConnectionController::class, 'store'])->name('connections.store');
     Route::put('/connections/{connection}/accept', [ConnectionController::class, 'accept'])->name('connections.accept');
     Route::put('/connections/{connection}/reject', [ConnectionController::class, 'reject'])->name('connections.reject');
+    
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
 require __DIR__.'/auth.php';

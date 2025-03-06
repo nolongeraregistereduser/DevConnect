@@ -41,6 +41,11 @@ class PostCreatedNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database', 'broadcast']; // Save to database and broadcast in real-time
+        // Only send notification if the notifiable user is not the post author
+        if ($notifiable->id === $this->post->user_id) {
+            return [];
+        }
+        
+        return ['database', 'broadcast'];
     }
 }

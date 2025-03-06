@@ -22,7 +22,8 @@ class ConnectionController extends Controller
             'status' => 'pending'
         ]);
 
-        $connection->user->notify(new ConnectionRequest ($connection));
+        // Send notification to the receiver (connected_user)
+        $user->notify(new ConnectionRequest($connection));
 
         return back()->with('success', 'Connection request sent!');
     }

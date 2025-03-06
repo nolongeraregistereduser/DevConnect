@@ -6,51 +6,37 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\User;
+use App\Models\Connection;
 
 class ConnectionRequest extends Notification
 {
     use Queueable;
 
-    public $connection ;
-    /**
-     * Create a new notification instance.
-     */
+    public $connection;
+
     public function __construct($connection)
     {
         $this->connection = $connection;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
     public function via(object $notifiable): array
     {
+        // Only send notification to the user receiving the connection request
+        if ($notifiable->id === $this->connection->user_id) {
+            return [];
+        }
         return ['database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(object $notifiable): array
     {
+        $sender = User::find($this->connection->user_id);
         return [
-            'message' => 'You have received a connection request from ' . $this->connection->user->name,
-
+            'connection_id' => $this->connection->id,
+            'message' => 'You have received a connection request from ' . $sender->name,
+            'sender_id' => $this->connection->user_id,
+            'sender_name' => $sender->name
         ];
     }
 }

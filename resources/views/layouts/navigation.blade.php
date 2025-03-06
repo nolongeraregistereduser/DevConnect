@@ -15,6 +15,15 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <!-- Add this within your navigation items -->
+                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.index')" class="relative">
+                        {{ __('Notifications') }}
+                        @if(auth()->user()->unreadNotifications->count() > 0)
+                            <span class="absolute top-0 right-0 -mt-1 -mr-1 px-2 py-0.5 text-xs font-bold rounded-full bg-red-500 text-white">
+                                {{ auth()->user()->unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </x-nav-link>
                 </div>
             </div>
 
