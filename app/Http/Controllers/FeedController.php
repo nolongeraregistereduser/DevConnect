@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Like;
 use Illuminate\Support\Facades\Auth;
+use App\Events\LikeEventNotification;
+use Illuminate\Support\Facades\Event;
+use App\Notifications\LikeNotification;
+use Illuminate\Support\Facades\DB;
+
 
 class FeedController extends Controller
 {
@@ -70,6 +75,30 @@ class FeedController extends Controller
             
             // Increment the likes count
             $post->increment('likes_count');
+
+            event(new LikeEventNotification([
+                'user' => $post->user,
+                'message' => $user->name . ' liked your post',
+                // 'post' => $post,
+            ]));
+
+
+             // Get the post owner
+$postOwner = $post->user;
+
+// Create and send the notification
+$notification = new LikeNotification($user, $post);
+$postOwner->notify($notification);
+
+// Verify notification was created
+$notificationCount = DB::table('notifications')
+    ->where('notifiable_id', $postOwner->id)
+    ->where('type', 'App\Notifications\LikeNotification')
+    ->whereJsonContains('data->post_id', $post->id)
+    ->whereJsonContains('data->liker_id', $user->id)
+    ->count();
+
+
         }
 
         return response()->json([
@@ -102,7 +131,7 @@ class FeedController extends Controller
         ]);
 
         $comment = $post->comments()->create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'content' => $validated['content']
         ]);
 
@@ -115,8 +144,8 @@ class FeedController extends Controller
                 'content' => $comment->content,
                 'created_at' => $comment->created_at->diffForHumans(),
                 'user' => [
-                    'name' => auth()->user()->name,
-                    'profile_picture' => auth()->user()->profile_picture
+                    'name' => Auth::user()->name,
+                    'profile_picture' => Auth::user()->profile_picture
                 ]
             ]
         ]);
