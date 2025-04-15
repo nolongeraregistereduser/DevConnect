@@ -10,7 +10,6 @@
 <body class="bg-gray-50">
     <!-- Navigation -->
 
-
     <nav class="fixed top-0 w-full bg-gray-900 text-white z-50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
@@ -53,6 +52,9 @@
                         </div>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                             <a href="{{ route('profile.view', $user->id) }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Edit Profile</a>
+                            <a href="{{ route('posts.create') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Create Poste</a>
+
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</button>

@@ -40,15 +40,43 @@ class LoginRequest extends FormRequest
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        
+        // Get the credentials from the request
+        $email = $this->input('email');
+        $password = $this->input('password');
+        
+        \Illuminate\Support\Facades\Log::info('Login attempt', ['email' => $email]);
+        
+        // Find user directly
+        $user = \App\Models\User::where('email', $email)->first();
+        
+        if (!$user) {
             RateLimiter::hit($this->throttleKey());
-
+            \Illuminate\Support\Facades\Log::warning('Login failed - User not found', ['email' => $email]);
+            
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'No account found with this email address.',
             ]);
         }
-
+        
+        // Verify password directly
+        if (!\Illuminate\Support\Facades\Hash::check($password, $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+            \Illuminate\Support\Facades\Log::warning('Login failed - Password mismatch', [
+                'email' => $email,
+                'password_length' => strlen($password),
+                'user_password_hash_method' => substr($user->password, 0, 4) // First few chars indicate hash type
+            ]);
+            
+            throw ValidationException::withMessages([
+                'password' => 'The provided password is incorrect.',
+            ]);
+        }
+        
+        // Log the user in directly
+        \Illuminate\Support\Facades\Auth::login($user, $this->boolean('remember'));
+        
+        \Illuminate\Support\Facades\Log::info('Login successful', ['email' => $email, 'user_id' => $user->id]);
         RateLimiter::clear($this->throttleKey());
     }
 
