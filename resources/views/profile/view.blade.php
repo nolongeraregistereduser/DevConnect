@@ -37,8 +37,12 @@
                     
 
                     <div class="relative">
-                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer" onclick="toggleDropdown()">
-                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer bg-gray-700 flex items-center justify-center" onclick="toggleDropdown()">
+                            @if(Auth::user()->profile_picture && file_exists(public_path('storage/' . Auth::user()->profile_picture)))
+                                <img src="{{ asset('storage/' . Auth::user()->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                            @else
+                                <span class="text-white font-semibold text-sm">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            @endif
                         </div>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                             <a href="{{ route('profile.view', $user->id) }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
@@ -81,15 +85,12 @@
                     <!-- Profile Picture -->
                     <div class="absolute -bottom-16 left-8">
                         {{-- {{dd($user)}} --}}
-                        @if($user->profile_picture)
+                        @if($user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture)))
                             <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="{{ $user->name }}"
                                  class="w-32 h-32 rounded-full border-4 border-white object-cover shadow-lg">
-                                 <h1>test</h1>
                         @else
-                            <div class="w-32 h-32 rounded-full border-4 border-white bg-gray-200 flex items-center justify-center shadow-lg">
-                                <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                                </svg>
+                            <div class="w-32 h-32 rounded-full border-4 border-white bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                                <span class="text-white font-bold text-4xl">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                             </div>
                         @endif
                     </div>

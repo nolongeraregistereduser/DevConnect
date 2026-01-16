@@ -47,8 +47,12 @@
                     
 
                     <div class="relative">
-                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer" onclick="toggleDropdown()">
-                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer bg-gray-700 flex items-center justify-center" onclick="toggleDropdown()">
+                            @if($user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture)))
+                                <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                            @else
+                                <span class="text-white font-semibold text-sm">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                            @endif
                         </div>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                             <a href="{{ route('profile.view', $user->id) }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
@@ -102,8 +106,14 @@
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div class="relative">
                         <div class="h-24 bg-gradient-to-r from-blue-600 to-blue-400"></div>
-                        <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" 
-                             class="absolute -bottom-6 left-4 w-20 h-20 rounded-full border-4 border-white shadow-md"/>
+                        @if($user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture)))
+                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" 
+                                 class="absolute -bottom-6 left-4 w-20 h-20 rounded-full border-4 border-white shadow-md object-cover"/>
+                        @else
+                            <div class="absolute -bottom-6 left-4 w-20 h-20 rounded-full border-4 border-white bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md flex items-center justify-center">
+                                <span class="text-white font-bold text-2xl">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                            </div>
+                        @endif
                     </div>
                     <div class="pt-14 p-4">
                         <div class="flex items-center justify-between">
@@ -164,7 +174,13 @@
                 <!-- Post Creation -->
                 <div class="bg-white rounded-xl shadow-sm p-4">
                     <div class="flex items-center space-x-4">
-                        <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="User" class="w-12 h-12 rounded-full"/>
+                        @if($user->profile_picture && file_exists(public_path('storage/' . $user->profile_picture)))
+                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="User" class="w-12 h-12 rounded-full object-cover"/>
+                        @else
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                                <span class="text-white font-semibold">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                            </div>
+                        @endif
                         <button class="bg-gray-100 hover:bg-gray-200 text-gray-500 text-left rounded-lg px-4 py-3 flex-grow transition-colors duration-200">
                             Share your knowledge or ask a question...
                         </button>
@@ -198,9 +214,15 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <a href="{{ route('profile.view', $post->user->id) }}" class="hover:opacity-80">
-                                    <img src="{{ $post->user->profile_picture ? asset('storage/' . $post->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                                         alt="{{ $post->user->name }}" 
-                                         class="w-12 h-12 rounded-full"/>
+                                    @if($post->user->profile_picture && file_exists(public_path('storage/' . $post->user->profile_picture)))
+                                        <img src="{{ asset('storage/' . $post->user->profile_picture) }}" 
+                                             alt="{{ $post->user->name }}" 
+                                             class="w-12 h-12 rounded-full object-cover"/>
+                                    @else
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                                            <span class="text-white font-semibold">{{ strtoupper(substr($post->user->name, 0, 1)) }}</span>
+                                        </div>
+                                    @endif
                                 </a>
                                 <div>
                                     <a href="{{ route('profile.view', $post->user->id) }}" class="hover:text-blue-500">
@@ -277,9 +299,15 @@
     <form class="mb-4 comment-form" data-post-id="{{ $post->id }}">
         @csrf
         <div class="flex items-start space-x-3">
-            <img src="{{ auth()->user()->profile_picture ? asset('storage/' . auth()->user()->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                 alt="{{ auth()->user()->name }}" 
-                 class="w-8 h-8 rounded-full"/>
+            @if(auth()->user()->profile_picture && file_exists(public_path('storage/' . auth()->user()->profile_picture)))
+                <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" 
+                     alt="{{ auth()->user()->name }}" 
+                     class="w-8 h-8 rounded-full object-cover"/>
+            @else
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                    <span class="text-white font-semibold text-xs">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                </div>
+            @endif
             <div class="flex-1">
                 <textarea 
                     name="content"
@@ -301,9 +329,15 @@
         @foreach($post->comments as $comment)
             <div class="flex space-x-3">
                 <a href="{{ route('profile.view', $comment->user->id) }}" class="hover:opacity-80">
-                    <img src="{{ $comment->user->profile_picture ? asset('storage/' . $comment->user->profile_picture) : 'https://avatar.iran.liara.run/public/boy' }}" 
-                         alt="{{ $comment->user->name }}" 
-                         class="w-8 h-8 rounded-full"/>
+                    @if($comment->user->profile_picture && file_exists(public_path('storage/' . $comment->user->profile_picture)))
+                        <img src="{{ asset('storage/' . $comment->user->profile_picture) }}" 
+                             alt="{{ $comment->user->name }}" 
+                             class="w-8 h-8 rounded-full object-cover"/>
+                    @else
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                            <span class="text-white font-semibold text-xs">{{ strtoupper(substr($comment->user->name, 0, 1)) }}</span>
+                        </div>
+                    @endif
                 </a>
                 <div class="flex-1">
                     <div class="bg-gray-50 rounded-lg px-4 py-2">
@@ -485,9 +519,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     const commentsList = document.getElementById(`commentsList-${postId}`);
                     const newComment = `
                         <div class="flex space-x-3">
-                            <img src="${data.comment.user.profile_picture || 'https://avatar.iran.liara.run/public/boy'}" 
-                                 alt="${data.comment.user.name}" 
-                                 class="w-8 h-8 rounded-full"/>
+                            ${data.comment.user.profile_picture ? 
+                                `<img src="${data.comment.user.profile_picture.startsWith('http') ? data.comment.user.profile_picture : '/storage/' + data.comment.user.profile_picture}" 
+                                      alt="${data.comment.user.name}" 
+                                      class="w-8 h-8 rounded-full object-cover"/>` : 
+                                `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                                    <span class="text-white font-semibold text-xs">${data.comment.user.name.charAt(0).toUpperCase()}</span>
+                                 </div>`
+                            }
                             <div class="flex-1">
                                 <div class="bg-gray-50 rounded-lg px-4 py-2">
                                     <div class="font-medium text-sm">${data.comment.user.name}</div>

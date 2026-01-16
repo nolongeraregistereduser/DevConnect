@@ -36,8 +36,12 @@
                     
 
                     <div class="relative">
-                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer" onclick="toggleDropdown()">
-                            <img src="{{ asset('storage/' . $user->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                        <div class="h-8 w-8 rounded-full overflow-hidden cursor-pointer bg-gray-700 flex items-center justify-center" onclick="toggleDropdown()">
+                            @if(Auth::user()->profile_picture && file_exists(public_path('storage/' . Auth::user()->profile_picture)))
+                                <img src="{{ asset('storage/' . Auth::user()->profile_picture)}}" alt="Profile" class="w-full h-full object-cover"/>
+                            @else
+                                <span class="text-white font-semibold text-sm">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
+                            @endif
                         </div>
                         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                             <a href="{{ route('profile.view', $user->id) }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
